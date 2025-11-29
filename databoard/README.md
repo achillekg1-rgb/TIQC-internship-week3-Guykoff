@@ -1,36 +1,224 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Projects CRUD Dashboard
 
-## Getting Started
+A modern, dual-database CRUD dashboard for managing projects. Switch seamlessly between MySQL and MongoDB with a beautiful, responsive UI featuring dark/light mode toggle.
 
-First, run the development server:
+## Features
 
-```bash
+- ✅ **Dual Database Support**: MySQL and MongoDB with the same API
+- ✅ **Full CRUD Operations**: Create, Read, Update, Delete projects
+- ✅ **Search & Filter**: Search by project name, filter by status
+- ✅ **Dark/Light Mode**: Manual theme toggle with localStorage persistence
+- ✅ **Real-time Validation**: Server-side input validation with helpful errors
+- ✅ **Toast Notifications**: Success and error feedback
+- ✅ **Responsive Design**: Mobile-first, works on all devices
+- ✅ **Loading States**: Disabled buttons while saving, loading indicators
+
+## Tech Stack
+
+- **Frontend**: Next.js 16, React, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **Databases**: MySQL 8 & MongoDB 7
+- **UI Components**: shadcn/ui with Lucide icons
+- **State Management**: React hooks with SWR-like patterns
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- Docker & Docker Compose (for databases)
+
+### 1. Start Databases
+
+\`\`\`bash
+# MySQL
+docker run -d --name mysql \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -p 3306:3306 \
+  mysql:8
+
+# MongoDB
+docker run -d --name mongo \
+  -p 27017:27017 \
+  mongo:7
+\`\`\`
+
+### 2. Setup Environment Variables
+
+Create `.env.local`:
+
+\`\`\`
+MYSQL_HOST=localhost
+MYSQL_USER=root
+MYSQL_PASSWORD=root
+MYSQL_DATABASE=projects_db
+
+MONGODB_URI=mongodb://localhost:27017
+MONGODB_DATABASE=projects_db
+\`\`\`
+
+### 3. Install Dependencies & Run
+
+\`\`\`bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+\`\`\`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Seed Database (Optional)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+\`\`\`bash
+# For MySQL
+npx ts-node scripts/seed-mysql.ts
 
-## Learn More
+# For MongoDB
+npx ts-node scripts/seed-mongodb.ts
+\`\`\`
 
-To learn more about Next.js, take a look at the following resources:
+## Database Schema
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### MySQL
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Table**: `projects`
 
-## Deploy on Vercel
+\`\`\`sql
+CREATE TABLE projects (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  owner VARCHAR(255) NOT NULL,
+  status VARCHAR(50) NOT NULL DEFAULT 'active',
+  tags JSON,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_status_owner (status, owner),
+  INDEX idx_created (createdAt)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+\`\`\`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Indexes**:
+- `idx_status_owner`: Compound index on (status, owner) for filtering and sorting
+- `idx_created`: Index on createdAt for chronological sorting
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### MongoDB
+
+**Collection**: `projects`
+
+**Sample Document**:
+\`\`\`json
+{
+  "_id": ObjectId("..."),
+  "name": "Website Redesign",
+  "owner": "Alice Johnson",
+  "status": "active",
+  "tags": ["design", "web", "frontend"],
+  "createdAt": "2025-01-15T10:30:00.000Z",
+  "updatedAt": "2025-01-15T10:30:00.000Z"
+}
+\`\`\`
+
+**Indexes**:
+\`\`\`json
+{
+  "compound": { "status": 1, "owner": 1 },
+  "created": { "createdAt": -1 }
+}
+\`\`\`
+
+## API Routes
+
+### Get Projects
+- **GET** `/api/projects?db=mysql&search=name&status=active`
+- Returns: Array of projects
+
+### Get Single Project
+- **GET** `/api/projects/[id]?db=mysql`
+- Returns: Project object or 404
+
+### Create Project
+- **POST** `/api/projects?db=mysql`
+- Body: \`{ name, owner, status, tags }\`
+- Returns: Created project with ID
+
+### Update Project
+- **PUT** `/api/projects/[id]?db=mysql`
+- Body: \`{ name, owner, status, tags }\`
+- Returns: Updated project
+
+### Delete Project
+- **DELETE** `/api/projects/[id]?db=mysql`
+- Returns: \`{ success: true }\`
+
+## Project Data Model
+
+- **id**: Auto-generated (MySQL) or ObjectId (MongoDB)
+- **name**: Required, max 255 chars
+- **owner**: Required, max 255 chars
+- **status**: One of 'active', 'on-hold', 'completed'
+- **tags**: Array of strings (e.g., ['design', 'web'])
+- **createdAt**: ISO 8601 timestamp
+- **updatedAt**: ISO 8601 timestamp
+
+## Validation Rules
+
+- Name and owner are required, non-empty strings
+- Status must be one of: active, on-hold, completed
+- Tags must be an array of non-empty strings
+- Maximum name/owner length: 255 characters
+
+## Seed Data
+
+The application includes 5 sample projects across different statuses and owners. Run seed scripts to populate your databases.
+
+## Database Connection Troubleshooting
+
+### MySQL Connection Issues
+- Ensure MySQL is running: \`docker ps | grep mysql\`
+- Check credentials in .env.local
+- Verify port 3306 is accessible
+
+### MongoDB Connection Issues
+- Ensure MongoDB is running: \`docker ps | grep mongo\`
+- Check MONGODB_URI in .env.local
+- Verify port 27017 is accessible
+
+## Performance Notes
+
+- Database queries use indexes for fast filtering
+- Seed includes ≤5k records to avoid performance issues
+- Connection pooling configured for MySQL
+- MongoDB queries use efficient compound indexes
+
+## Switching Databases
+
+Click "MySQL" or "MongoDB" buttons in the top-left to switch between databases. All data is isolated per database.
+
+## Dark/Light Mode
+
+Click the sun/moon icon in the top-right to toggle theme. Three options:
+- Light: Always light mode
+- Dark: Always dark mode
+- System: Follow system preference
+
+Theme is saved to localStorage and persists between sessions.
+
+## Troubleshooting
+
+**Projects not showing?**
+- Check database is running
+- Run seed script to add sample data
+- Check browser console for errors
+
+**Save button disabled?**
+- Wait for current request to complete
+- Check browser console for validation errors
+- Ensure all required fields are filled
+
+**Theme not changing?**
+- Clear localStorage and try again
+- Check browser console for errors
+- Ensure JavaScript is enabled
+
+## License
+
+MIT
