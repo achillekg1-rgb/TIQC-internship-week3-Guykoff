@@ -2,7 +2,7 @@
 
 A modern, dual-database CRUD dashboard for managing projects. Switch seamlessly between MySQL and MongoDB with a beautiful, responsive UI featuring dark/light mode toggle.
 <br/><br/>
-System works locally (Docker.Desktop approach), Link to website: https://tiqc-internship-week3-guykoff-qjwi-f5uci10c6.vercel.app/
+System works locally (Docker.Desktop approach), Link to website: 
 ## Features
 
 - ✅ **Dual Database Support**: MySQL and MongoDB with the same API
