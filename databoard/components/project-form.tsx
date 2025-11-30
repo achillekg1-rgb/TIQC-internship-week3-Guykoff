@@ -28,22 +28,40 @@ export function ProjectForm({ projectId, dbType, onSuccess }: ProjectFormProps) 
   useEffect(() => {
     if (projectId) {
       fetchProject()
+    } else {
+      setFormData({
+        name: "",
+        owner: "",
+        status: "active",
+        tags: [],
+      })
+      setTagInput("")
     }
-  }, [projectId])
+  }, [projectId, dbType])
 
   const fetchProject = async () => {
+    if (!projectId) return
     try {
       setLoading(true)
-      const res = await fetch(`/api/projects/${projectId}?db=${dbType}`)
-      if (!res.ok) throw new Error("Failed to fetch project")
+      const url = `/api/projects/${projectId}?db=${dbType}`
+      console.log("[v0] Fetching from:", url)
+      const res = await fetch(url)
+      if (!res.ok) {
+        throw new Error("Failed to fetch project")
+      }
       const data = await res.json()
+      console.log("[v0] Received data:", data)
+      console.log("[v0] Tags from API:", data.tags)
+      const tagsArray = Array.isArray(data.tags) ? data.tags : []
+      console.log("[v0] Tags array after processing:", tagsArray)
       setFormData({
-        name: data.name,
-        owner: data.owner,
-        status: data.status,
-        tags: data.tags,
+        name: data.name || "",
+        owner: data.owner || "",
+        status: data.status || "active",
+        tags: tagsArray,
       })
     } catch (error) {
+      console.log("[v0] Fetch error:", error)
       toast({
         variant: "destructive",
         title: "Error",
