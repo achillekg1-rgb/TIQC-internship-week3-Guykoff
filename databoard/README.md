@@ -1,7 +1,8 @@
 # Projects CRUD Dashboard
 
 A modern, dual-database CRUD dashboard for managing projects. Switch seamlessly between MySQL and MongoDB with a beautiful, responsive UI featuring dark/light mode toggle.
-
+<br/><br/>
+System works locally (Docker.Desktop approach), Link to website: https://tiqc-internship-week3-guykoff-qjwi-f5uci10c6.vercel.app/
 ## Features
 
 - ✅ **Dual Database Support**: MySQL and MongoDB with the same API
@@ -219,6 +220,5 @@ Theme is saved to localStorage and persists between sessions.
 - Check browser console for errors
 - Ensure JavaScript is enabled
 
-## License
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/657cd896-32da-4437-9372-5fb2d0523c04" />
 
-MIT
