@@ -23,32 +23,60 @@ System works locally (Docker.Desktop approach), Link to website: https://tiqc-in
 - **State Management**: React hooks with SWR-like patterns
 
 ## Quick Start
+Download Docker.Desktop
+
+AMD64 DockerDesktop - if you are running on Intel or AMD on Windows<br/>
+ARM64 DockerDesktop - if you are running Windows on a ARM processor architecture
+<br/><br/>
+Check which Windows architecture you have installed on your device
+
+Search About Your PC in your start menu then look for system type.<br/>
+If it says x64-based processor, download the AMD6x version of the software.
 
 ### Prerequisites
 
 - Node.js 18+
 - Docker & Docker Compose (for databases)
 
-### 1. Start Databases
+### Start Databases
 
-\`\`\`bash
 # MySQL
+```
 docker run -d --name mysql \
   -e MYSQL_ROOT_PASSWORD=root \
   -p 3306:3306 \
   mysql:8
-
+```
 # MongoDB
+```
 docker run -d --name mongo \
   -p 27017:27017 \
   mongo:7
-\`\`\`
+```
 
-### 2. Setup Environment Variables
+### Create the Node.js app
+```
+npx create-next-app@latest databoard
+```
+<br/>
+Import your completed UI from v0.app
+
+### Make the git repository
+
+```
+git init
+git add C:\Users\"host name"\databoard
+git commit -m "Setup"
+git branch -M main
+git remote add origin https://github.com/achillekg1-rgb/TIQC-internship-week3-guykoff.git
+git push -u origin main
+```
+
+### Setup Environment Variables
 
 Create `.env.local`:
 
-\`\`\`
+```
 MYSQL_HOST=localhost
 MYSQL_USER=root
 MYSQL_PASSWORD=root
@@ -56,26 +84,27 @@ MYSQL_DATABASE=projects_db
 
 MONGODB_URI=mongodb://localhost:27017
 MONGODB_DATABASE=projects_db
-\`\`\`
+```
 
-### 3. Install Dependencies & Run
+### Install Dependencies & Run
 
-\`\`\`bash
+```bash
 npm install
 npm run dev
-\`\`\`
+```
 
 Open http://localhost:3000
 
-### 4. Seed Database (Optional)
+### Seed Database (Optional)
 
-\`\`\`bash
 # For MySQL
+```
 npx ts-node scripts/seed-mysql.ts
-
+```
 # For MongoDB
+```
 npx ts-node scripts/seed-mongodb.ts
-\`\`\`
+```
 
 ## Database Schema
 
@@ -83,7 +112,7 @@ npx ts-node scripts/seed-mongodb.ts
 
 **Table**: `projects`
 
-\`\`\`sql
+```sql
 CREATE TABLE projects (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
@@ -95,7 +124,7 @@ CREATE TABLE projects (
   INDEX idx_status_owner (status, owner),
   INDEX idx_created (createdAt)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-\`\`\`
+```
 
 **Indexes**:
 - `idx_status_owner`: Compound index on (status, owner) for filtering and sorting
@@ -106,7 +135,7 @@ CREATE TABLE projects (
 **Collection**: `projects`
 
 **Sample Document**:
-\`\`\`json
+```json
 {
   "_id": ObjectId("..."),
   "name": "Website Redesign",
@@ -116,15 +145,15 @@ CREATE TABLE projects (
   "createdAt": "2025-01-15T10:30:00.000Z",
   "updatedAt": "2025-01-15T10:30:00.000Z"
 }
-\`\`\`
+```
 
 **Indexes**:
-\`\`\`json
+```json
 {
   "compound": { "status": 1, "owner": 1 },
   "created": { "createdAt": -1 }
 }
-\`\`\`
+```
 
 ## API Routes
 
