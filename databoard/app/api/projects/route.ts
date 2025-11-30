@@ -44,16 +44,20 @@ export async function GET(request: NextRequest) {
       const [rows] = await connection.execute(query, params)
 
       const projects = (rows as any[]).map((row) => {
+        let tags: string[] = []
         try {
-          return {
-            ...row,
-            tags: JSON.parse(row.tags || "[]"),
+          const tagsValue = row.tags
+          if (typeof tagsValue === "string") {
+            tags = JSON.parse(tagsValue)
+          } else if (Array.isArray(tagsValue)) {
+            tags = tagsValue
           }
         } catch (e) {
-          return {
-            ...row,
-            tags: [],
-          }
+          tags = []
+        }
+        return {
+          ...row,
+          tags,
         }
       })
 
@@ -117,7 +121,12 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         id: (result as any).insertId,
-        ...projectData,
+        name: projectData.name,
+        owner: projectData.owner,
+        status: projectData.status,
+        tags: projectData.tags,
+        createdAt: projectData.createdAt,
+        updatedAt: projectData.updatedAt,
       })
     }
   } catch (error: any) {
