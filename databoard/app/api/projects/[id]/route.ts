@@ -36,7 +36,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       try {
         tags = JSON.parse(project.tags || "[]")
       } catch (e) {
-        console.error("Error parsing tags for project:", id, e)
         tags = []
       }
 

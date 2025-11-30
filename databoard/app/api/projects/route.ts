@@ -50,7 +50,6 @@ export async function GET(request: NextRequest) {
             tags: JSON.parse(row.tags || "[]"),
           }
         } catch (e) {
-          console.error("Error parsing tags for project:", row.id, e)
           return {
             ...row,
             tags: [],

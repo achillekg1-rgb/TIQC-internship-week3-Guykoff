@@ -18,7 +18,11 @@ export default function Home() {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
 
   const handleOpenDialog = (id?: string) => {
-    if (id) setEditingId(id)
+    if (id) {
+      setEditingId(id)
+    } else {
+      setEditingId(null)
+    }
     setIsOpen(true)
   }
 
@@ -28,6 +32,11 @@ export default function Home() {
   }
 
   const handleFormSuccess = () => {
+    handleCloseDialog()
+    setRefreshTrigger((prev) => prev + 1)
+  }
+
+  const handleDeleteSuccess = () => {
     handleCloseDialog()
     setRefreshTrigger((prev) => prev + 1)
   }
@@ -101,6 +110,7 @@ export default function Home() {
             searchTerm={searchTerm}
             statusFilter={statusFilter}
             onEdit={handleOpenDialog}
+            onDelete={handleDeleteSuccess}
             refreshTrigger={refreshTrigger}
           />
         </div>

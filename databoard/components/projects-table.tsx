@@ -21,10 +21,18 @@ interface ProjectsTableProps {
   searchTerm: string
   statusFilter: string
   onEdit: (id: string) => void
+  onDelete?: () => void
   refreshTrigger: number
 }
 
-export function ProjectsTable({ dbType, searchTerm, statusFilter, onEdit, refreshTrigger }: ProjectsTableProps) {
+export function ProjectsTable({
+  dbType,
+  searchTerm,
+  statusFilter,
+  onEdit,
+  onDelete,
+  refreshTrigger,
+}: ProjectsTableProps) {
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<string | null>(null)
@@ -71,6 +79,7 @@ export function ProjectsTable({ dbType, searchTerm, statusFilter, onEdit, refres
         title: "Success",
         description: "Project deleted successfully",
       })
+      if (onDelete) onDelete()
     } catch (error) {
       toast({
         variant: "destructive",
